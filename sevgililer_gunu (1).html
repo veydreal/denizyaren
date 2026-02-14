@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sevgililer Günün Kutlu Olsun</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+            height: 100vh;
+        }
+
+        /* Animasyonlu gradient arka plan */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #ff6b9d, #c44569, #ff6b9d, #ffa07a, #ff9ff3, #ff6b9d);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Yüzen kalp SVG'leri */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart-svg {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            opacity: 0;
+            animation: floatUp 8s infinite ease-in;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Ana container */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+        }
+
+        .question-box {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 80px 70px;
+            border-radius: 35px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+            max-width: 600px;
+            width: 100%;
+            animation: fadeInScale 0.8s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .heart-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 40px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #c44569;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.4;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 22px;
+            color: #666;
+            margin-bottom: 50px;
+            font-weight: 400;
+        }
+
+        .buttons-wrapper {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        button {
+            padding: 20px 50px;
+            font-size: 20px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            letter-spacing: 0.5px;
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            color: white;
+            position: relative;
+        }
+
+        #yesBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(196, 69, 105, 0.4);
+        }
+
+        #yesBtn:active {
+            transform: translateY(-1px);
+        }
+
+        #noBtn {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: white;
+            position: absolute;
+            transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* Sürpriz ekranı */
+        .surprise-screen {
+            display: none;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 80px 70px;
+            border-radius: 35px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+            max-width: 700px;
+            width: 100%;
+            animation: surpriseAppear 0.8s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes surpriseAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotate(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .surprise-heart {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 40px;
+            animation: heartBeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            10%, 30% { transform: scale(0.92); }
+            20%, 40%, 60%, 80% { transform: scale(1.1); }
+            50%, 70% { transform: scale(1.05); }
+        }
+
+        .surprise-screen h1 {
+            font-size: 52px;
+            background: linear-gradient(135deg, #ff6b9d, #c44569, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 35px;
+            animation: textShine 3s ease-in-out infinite;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        @keyframes textShine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        .love-message {
+            font-size: 24px;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 35px;
+            font-weight: 400;
+        }
+
+        .signature {
+            font-size: 22px;
+            color: #c44569;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        /* Konfeti animasyonu */
+        .confetti {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: #ff6b9d;
+            animation: confettiFall 3s linear;
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .question-box, .surprise-screen {
+                padding: 50px 40px;
+                margin: 15px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+                margin-bottom: 40px;
+            }
+            
+            .heart-icon, .surprise-heart {
+                width: 80px;
+                height: 80px;
+            }
+            
+            button {
+                padding: 16px 40px;
+                font-size: 18px;
+            }
+
+            .buttons-wrapper {
+                height: 300px;
+            }
+
+            .surprise-screen h1 {
+                font-size: 38px;
+            }
+
+            .love-message {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <div class="container">
+        <div class="question-box" id="questionBox">
+            <svg class="heart-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#heartGradient)"/>
+                <defs>
+                    <linearGradient id="heartGradient" x1="2" y1="12" x2="22" y2="12">
+                        <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#c44569;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <h1>Sevgililer Günümüz Kutlu Olsun</h1>
+            <p class="subtitle">Beni seviyor musun?</p>
+            <div class="buttons-wrapper">
+                <div class="buttons-container" id="buttonsContainer">
+                    <button id="yesBtn">Evet</button>
+                    <button id="noBtn">Hayır</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="surprise-screen" id="surpriseScreen">
+            <svg class="surprise-heart" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#heartGradient2)"/>
+                <defs>
+                    <linearGradient id="heartGradient2" x1="2" y1="12" x2="22" y2="12">
+                        <stop offset="0%" style="stop-color:#ff6b9d;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#c44569;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#ff9ff3;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <h1>Seni Çok Seviyorum</h1>
+            <div class="love-message">
+                Sen benim her şeyimsin.<br>
+                Seninle geçirdiğim her an çok değerli.<br>
+                Hayatıma renk kattığın için teşekkür ederim.
+            </div>
+            <p class="signature">Sonsuz sevgiyle...</p>
+        </div>
+    </div>
+
+    <script>
+        // Yüzen kalpler oluştur (SVG)
+        function createFloatingHearts() {
+            const container = document.getElementById('heartsContainer');
+            
+            setInterval(() => {
+                const heartSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                heartSVG.classList.add('heart-svg');
+                heartSVG.setAttribute('viewBox', '0 0 24 24');
+                heartSVG.setAttribute('fill', 'none');
+                
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z');
+                path.setAttribute('fill', 'rgba(255, 107, 157, 0.8)');
+                
+                heartSVG.appendChild(path);
+                heartSVG.style.left = Math.random() * 100 + '%';
+                heartSVG.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                heartSVG.style.animationDelay = Math.random() * 2 + 's';
+                
+                container.appendChild(heartSVG);
+                
+                setTimeout(() => heartSVG.remove(), 10000);
+            }, 400);
+        }
+
+        // Hayır butonunun kaçması - Daha geniş alan
+        const noBtn = document.getElementById('noBtn');
+        const buttonsWrapper = document.querySelector('.buttons-wrapper');
+        let noBtnClickCount = 0;
+
+        noBtn.addEventListener('mouseenter', moveNoButton);
+        noBtn.addEventListener('click', moveNoButton);
+
+        function moveNoButton() {
+            noBtnClickCount++;
+            
+            const wrapperRect = buttonsWrapper.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            // Daha geniş alan için sınırları genişlet
+            const maxX = (wrapperRect.width - btnRect.width) / 2;
+            const maxY = (wrapperRect.height - btnRect.height) / 2;
+            
+            // Rastgele pozisyon hesapla
+            const randomX = (Math.random() * maxX * 2) - maxX;
+            const randomY = (Math.random() * maxY * 2) - maxY;
+            
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            
+            // Her kaçışta farklı mesajlar
+            const messages = [
+                'Hayır deme',
+                'Lütfen Evet de',
+                'Beni üzme',
+                'Neden kaçıyorsun?',
+                'Evet de artık',
+                'Son şans',
+                'Hayır olmaz'
+            ];
+            
+            if (noBtnClickCount <= messages.length) {
+                noBtn.textContent = messages[noBtnClickCount - 1];
+            }
+        }
+
+        // Evet butonuna tıklama
+        const yesBtn = document.getElementById('yesBtn');
+        const questionBox = document.getElementById('questionBox');
+        const surpriseScreen = document.getElementById('surpriseScreen');
+
+        yesBtn.addEventListener('click', () => {
+            // Konfeti efekti
+            createConfetti();
+            
+            // Ekranları değiştir
+            questionBox.style.display = 'none';
+            surpriseScreen.style.display = 'block';
+            
+            // Daha fazla konfeti yağdır
+            for (let i = 0; i < 50; i++) {
+                setTimeout(createConfetti, i * 100);
+            }
+        });
+
+        // Konfeti oluştur
+        function createConfetti() {
+            const colors = ['#ff6b9d', '#c44569', '#ffa07a', '#ff9ff3', '#ff6b9d', '#fff'];
+            for (let i = 0; i < 60; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-20px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.width = (Math.random() * 8 + 8) + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // Sayfa yüklendiğinde kalpleri başlat
+        createFloatingHearts();
+    </script>
+</body>
+</html>
